@@ -6,16 +6,24 @@ import (
 	"os"
 
 	//"github.com/fepc18/go-users-cleanarchitecture/middleware"
+
+	"github.com/fepc18/go-users-cleanarchitecture/core/usecases"
 	"github.com/fepc18/go-users-cleanarchitecture/infraestructure/http/routers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
 
 func Handlers() {
-	router := mux.NewRouter()
 
-	//router.HandleFunc("/register", middleware.CheckDB(routers.Register)).Methods("POST")
-	router.HandleFunc("/register", routers.Register).Methods("POST")
+	//userRepo := repository.NewUserRepo(conf.DBUrl)
+
+	// Use Cases
+	userUseCase := usecases.NewUserUseCase()
+
+	// Controllers
+	//r := http.NewServeMux()
+	router := mux.NewRouter()
+	routers.NewUserController(router, userUseCase)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
