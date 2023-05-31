@@ -7,12 +7,12 @@ import (
 )
 
 type UserUseCase struct {
-	UserRepo models.UserRepository
+	UserRepo models.IUserRepository
 	//User *models.User
 }
 
 // constructor
-func NewUserUseCase(ur models.UserRepository) UserUseCase {
+func NewUserUseCase(ur models.IUserRepository) UserUseCase {
 	return UserUseCase{UserRepo: ur}
 }
 

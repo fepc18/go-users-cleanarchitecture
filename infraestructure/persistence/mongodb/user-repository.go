@@ -13,7 +13,7 @@ type userRepository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(db *mongo.Database) models.UserRepository {
+func NewUserRepository(db *mongo.Database) models.IUserRepository {
 
 	return &userRepository{
 		collection: db.Collection("users"),

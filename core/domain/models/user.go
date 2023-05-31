@@ -20,6 +20,6 @@ type User struct {
 	WebSite   string             `bson:"website" json:"website,omitempty"`
 }
 
-type UserRepository interface {
+type IUserRepository interface {
 	Create(user *User) (*User, bool, error)
 }
