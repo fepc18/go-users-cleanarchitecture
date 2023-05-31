@@ -4,35 +4,32 @@ import (
 	"errors"
 
 	"github.com/fepc18/go-users-cleanarchitecture/core/domain/models"
-	"github.com/fepc18/go-users-cleanarchitecture/infraestructure/persistence/mongodb"
 )
 
 type UserUseCase struct {
-	value string
-	//UserRepo domain.UserRepository
+	UserRepo models.UserRepository
 	//User *models.User
 }
 
 // constructor
-// func NewUserUseCase(ur domain.UserRepository) UserUseCase {
-func NewUserUseCase() UserUseCase {
-	//func NewUserUseCase(User *models.User) (*models.User, error) *UserUseCase {
-	//return User, nil
-	return UserUseCase{}
+func NewUserUseCase(ur models.UserRepository) UserUseCase {
+	return UserUseCase{UserRepo: ur}
 }
 
 // methods
-func (uc *UserUseCase) Create(t models.User) (string, error) {
+func (uc *UserUseCase) Create(user *models.User) (*models.User, error) {
+	userCreated, status, err := uc.UserRepo.Create(user)
 
-	_, status, err := mongodb.InsertRegister(t)
+	//_, status, err := mongodb.InsertRegister(t)
 	if err != nil {
 		//http.Error(w, "An error occurred while trying to register the user "+err.Error(), http.StatusInternalServerError)
-		return "", err
+		return user, err
 	}
 	if status == false {
-		return "", errors.New("Sample Error")
+		return user, errors.New("Sample Error")
 	}
-	return "User created ", nil
+
+	return userCreated, nil
 }
 
 /*

@@ -11,14 +11,17 @@ import (
 	"github.com/fepc18/go-users-cleanarchitecture/infraestructure/http/routers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+
+	"github.com/fepc18/go-users-cleanarchitecture/infraestructure/persistence/mongodb"
 )
 
 func Handlers() {
 
-	//userRepo := repository.NewUserRepo(conf.DBUrl)
-
+	db := mongodb.MongoCN.Database("twitter")
+	// Initialize the repositories
+	userMongoRepository := mongodb.NewUserRepository(db)
 	// Use Cases
-	userUseCase := usecases.NewUserUseCase()
+	userUseCase := usecases.NewUserUseCase(userMongoRepository)
 
 	// Controllers
 	//r := http.NewServeMux()

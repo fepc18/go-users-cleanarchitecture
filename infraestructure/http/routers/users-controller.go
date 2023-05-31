@@ -42,7 +42,8 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resu, _ := uc.UserUseCase.Create(t)
+	resu, _ := uc.UserUseCase.Create(&t)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(resu)
 	/*_, encontrado, _ := bd.CheckUserExist(t.Email)
 	if encontrado == true {

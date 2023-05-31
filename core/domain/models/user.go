@@ -1,8 +1,9 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
@@ -17,4 +18,8 @@ type User struct {
 	Biography string             `bson:"biography" json:"biography,omitempty"`
 	Location  string             `bson:"location" json:"location,omitempty"`
 	WebSite   string             `bson:"website" json:"website,omitempty"`
+}
+
+type UserRepository interface {
+	Create(user *User) (*User, bool, error)
 }
