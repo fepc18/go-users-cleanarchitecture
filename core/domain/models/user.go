@@ -22,4 +22,5 @@ type User struct {
 
 type IUserRepository interface {
 	Create(user *User) (*User, bool, error)
+	CheckUserExist(email string) (User, bool, error)
 }

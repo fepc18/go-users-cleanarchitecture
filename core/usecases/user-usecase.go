@@ -19,24 +19,21 @@ func NewUserUseCase(ur models.IUserRepository) UserUseCase {
 // methods
 func (uc *UserUseCase) Create(user *models.User) (*models.User, error) {
 	userCreated, status, err := uc.UserRepo.Create(user)
-
-	//_, status, err := mongodb.InsertRegister(t)
 	if err != nil {
-		//http.Error(w, "An error occurred while trying to register the user "+err.Error(), http.StatusInternalServerError)
 		return user, err
 	}
 	if status == false {
-		return user, errors.New("Sample Error")
+		return user, errors.New("An error occurred while trying to register the user")
 	}
 
 	return userCreated, nil
 }
 
-/*
-func (uc *UserUseCase) Create(user *domain.User) (*domain.User, error) {
-	createdUser, err := uc.UserRepo.Create(user)
+// Use case  CheckUserExist is the function that allows to know if the user already exists in the database
+func (uc *UserUseCase) CheckUserExist(email string) (bool, error) {
+	_, encontrado, err := uc.UserRepo.CheckUserExist(email)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-	return createdUser, nil
-}*/
+	return encontrado, nil
+}

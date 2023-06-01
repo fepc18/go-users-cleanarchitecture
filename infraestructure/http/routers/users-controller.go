@@ -40,27 +40,31 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(responses.NewErrorResponse("1234", http.StatusBadRequest, "Invalid request parameters.", errors))
 		return
 	}
+	encontrado, _ := uc.UserUseCase.CheckUserExist(t.Email)
+	if encontrado == true {
+		//http.StatusConflict(w)
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(responses.NewErrorResponse("1234", http.StatusConflict, "User already exists", nil))
+		return
+	}
 
-	data, _ := uc.UserUseCase.Create(&t)
+	data, err := uc.UserUseCase.Create(&t)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(responses.NewErrorResponse("1234", http.StatusInternalServerError, "An error occurred while trying to register the user "+err.Error(), nil))
+		return
+	}
+
+	/*
+		_, status, err := bd.InsertRegister(t)
+		if status == false {
+			http.Error(w, "An error occurred while trying to register the user ", http.StatusInternalServerError)
+			return
+		}
+	*/
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(responses.NewSuccessResponse(http.StatusCreated, data))
-
-	/*_, encontrado, _ := bd.CheckUserExist(t.Email)
-	if encontrado == true {
-		http.Error(w, "User already exists", http.StatusBadRequest)
-		return
-	}
-
-	_, status, err := bd.InsertRegister(t)
-	if err != nil {
-		http.Error(w, "An error occurred while trying to register the user "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if status == false {
-		http.Error(w, "An error occurred while trying to register the user ", http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)*/
 
 }
 
