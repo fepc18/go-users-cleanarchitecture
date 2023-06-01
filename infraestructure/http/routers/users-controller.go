@@ -7,6 +7,7 @@ import (
 	//"github.com/fepc18/twiter/bd"
 	"github.com/fepc18/go-users-cleanarchitecture/core/domain/models"
 	"github.com/fepc18/go-users-cleanarchitecture/core/usecases"
+	"github.com/fepc18/go-users-cleanarchitecture/infraestructure/http/responses"
 	"github.com/gorilla/mux"
 )
 
@@ -14,7 +15,7 @@ type UserController struct {
 	UserUseCase *usecases.UserUseCase //user Service
 }
 
-// constructor
+// factory
 func NewUserController(r *mux.Router, uc usecases.UserUseCase) {
 	controller := UserController{UserUseCase: &uc}
 	r.HandleFunc("/users", controller.CreateUser).Methods(http.MethodPost)
@@ -33,18 +34,17 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(t.Email) == 0 {
-		http.Error(w, "Email is required", http.StatusBadRequest)
-		return
-	}
-	if len(t.Password) < 6 {
-		http.Error(w, "Password must be at least 6 characters", http.StatusBadRequest)
+	validated, errors := ValidateUser(t)
+	if !validated {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(responses.NewErrorResponse("1234", http.StatusBadRequest, "Invalid request parameters.", errors))
 		return
 	}
 
-	resu, _ := uc.UserUseCase.Create(&t)
+	data, _ := uc.UserUseCase.Create(&t)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resu)
+	json.NewEncoder(w).Encode(responses.NewSuccessResponse(http.StatusCreated, data))
+
 	/*_, encontrado, _ := bd.CheckUserExist(t.Email)
 	if encontrado == true {
 		http.Error(w, "User already exists", http.StatusBadRequest)
@@ -62,4 +62,20 @@ func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)*/
 
+}
+
+func ValidateUser(t models.User) (bool, []responses.Error) {
+	var errors []responses.Error
+
+	if len(t.Email) == 0 {
+		errors = append(errors, responses.Error{ErrorCode: responses.MissingField, Message: "Email is required"})
+
+	}
+	if len(t.Password) < 6 {
+		errors = append(errors, responses.Error{ErrorCode: responses.InvalidField, Message: "Password must be at least 6 characters"})
+	}
+	if len(errors) > 0 {
+		return false, errors
+	}
+	return true, nil
 }
